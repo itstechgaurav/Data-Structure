@@ -1,0 +1,20 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/Users/gaurav/Desktop/Dev/Data Structure/Arrays/Arrays.c
+stdio.h
+-
+stdlib.h
+-
+
+/Users/gaurav/Desktop/Dev/Data Structure/Main.c
+stdio.h
+-
+Arrays/Arrays.c
+/Users/gaurav/Desktop/Dev/Data Structure/Arrays/Arrays.c
+

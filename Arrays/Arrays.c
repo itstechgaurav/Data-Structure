@@ -1,15 +1,20 @@
 #include<stdio.h>
 #include<stdlib.h>
 
-typedef struct _ARR_ {
-    int storage[10];
+#define true 1;
+#define false 0;
+#define boolean int;
+
+typedef struct ARRAY_ {
+    int storage[20];
     int size, length;
 } Array;
 
 Array createArray() {
     Array ar;
-    printf("Enter the size of new array: ");
-    scanf("%d", &ar.size);
+//    printf("Enter the size of new array: ");
+//    scanf("%d", &ar.size);
+    ar.size = 20;
 
 //    ar.storage = (int *) malloc(sizeof(int) * ar.size);
     ar.length = 0;
@@ -190,25 +195,164 @@ int recursiveBinarySearch(Array *array, int l, int h, int key) {
     return -1;
 }
 
+void reverseArray(Array *array) {
+    int aux_array[array->length];
+    int i = 0;
+    for(; i < array->length; i++) {
+        aux_array[i] = array->storage[array->length - 1 - i]; // copy into auxilary array in reverse order
+    }
+
+    for(i = 0; i < array->length; i++) {
+        array->storage[i] = aux_array[i];
+    }
+}
+
+void reverseArraySwapMethod(Array *array) {
+    int i, j, tmp;
+    //  i - Start
+    //  j - End
+    for(i = 0, j = array->length - 1; i < j; i++, j--) {
+        tmp = array->storage[i];
+        array->storage[i] = array->storage[j];
+        array->storage[j] = tmp;
+    }
+}
+
+void leftShift(Array *array) {
+   int i = 0;
+   for(; i < array->length; i++) {
+       array->storage[i] = array->storage[i + 1];
+   }
+   array->storage[array->length - 1] = 0;
+}
+
+void leftRotate(Array *array) {
+    int first = array->storage[0];
+    leftShift(array);
+    array->storage[array->length - 1] = first;
+}
+
+void rightShift(Array *array) {
+    int i = array->length - 1;
+    for(; i >= 0; i--) {
+        array->storage[i] = array->storage[i - 1];
+    }
+    array->storage[0] = 0;
+}
+
+void rightRotate(Array *array) {
+    int last = array->storage[array->length - 1];
+    rightShift(array);
+    array->storage[0] = last;
+}
+
+void insertIntoSortedArray(Array *array, int x) {
+    int i = array->length - 1;
+    while(array->length > 0 && array->storage[i] > x) {
+        array->storage[i + 1] = array->storage[i];
+        i--;
+    }
+    array->storage[i + 1] = x;
+    array->length++;
+}
+
+
+
+boolean isSorted(Array array) {
+    // A = [ 4, 8, 13, 26, 25, 28, 33 ], Length = 7
+    // then length - 1 = index(6) = 33
+    // then length - 2 = index(5) = 28
+    //
+    while(array.length - 1 > 0) { // it will stop at index(0) because it is already checked at(1) condition
+        // checking if at(length - 2) > at(length - 1)
+        // comparing last one with its previous and if last is not greater the previous the return false
+        if(array.storage[array.length - 2] > array.storage[array.length - 1]) {
+            return  false;
+        }
+        array.length--;
+    }
+    return true; // [ Zero Element exists | 1 element exists | list is sorted ]
+}
+
+void shiftNegativeToLeft(Array *array) {
+    int i = 0, j = array->length - 1;
+
+    while(i < j) {
+        while(array->storage[i] < 0) i++;
+        while(array->storage[j] >= 0) j--;
+
+        if(i < j) {
+            swap(array, i, j);
+        }
+    }
+}
+
+void shiftNegativeToLeft_(Array *array) {
+    int i = 0, j = array->length - 1;
+
+    while(i < j) {
+        if(array->storage[i] >= 0 && array->storage[j] < 0) { // LOOK FOR WHERE A[I] +VE AND A[J] -VE THEN SWAP
+            swap(array, i, j); // SWAP THEM
+            i++, j--; // AND INCREMENT AND DECREMENT I AND J
+        } else { // IF NOT FOUND THEN INCREMENT OR DECREMENT I AND J
+            if(i < 0) i++;
+            else j--;
+        }
+    }
+}
+
+Array mergeSortedArray(Array *A, Array *B) {
+    int i = 0, j = 0;
+    Array C = createArray();
+
+    while(i < A->length && j < B->length) {
+        if(A->storage[i] <= B->storage[j]) { // compare both and smaller one will be inserted int C@length
+            C.storage[C.length++] = A->storage[i++]; // if A[i] is smaller
+        } else {
+            C.storage[C.length++] = B->storage[j++]; // if B[j] is smaller
+        }
+    }
+
+    for(; i < A->length; i++) // if A's elements remaining to insert
+        C.storage[C.length++] = A->storage[i++]; // insert A's elements at length
+
+    for(; j < B->length; j++) // if B's elements remaining to insert
+        C.storage[C.length++] = B->storage[j++]; // insert A's elements at length
+
+    return C;
+}
+
+
+Array mergeSortedArray_(Array *A, Array *B) {
+    int i = 0, j = 0;
+    Array C = createArray();
+
+    while(i < A->length || j < B->length) { // loop until every element is loop over
+        if((i < A->length && j < B->length)) { // if we have both index then
+            if(A->storage[i] <= B->storage[j]) { // compare both and smaller one will be inserted int C@length
+                C.storage[C.length++] = A->storage[i++]; // if A[i] is smaller
+            } else {
+                C.storage[C.length++] = B->storage[j++]; // if B[j] is smaller
+            }
+        } else if(i < A->length) { // if A have remaining elements
+            C.storage[C.length++] = A->storage[i++]; // insert A's elements at length
+        } else {
+            C.storage[C.length++] = B->storage[j++]; // else insert B's elements at length
+        }
+    }
+    return C;
+}
+
 int array_main() {
     Array array = createArray();
 
     append(&array, 10);
-    append(&array, 20);
+    append(&array, -20);
     append(&array, 30);
-    append(&array, 40);
+    append(&array, -40);
     append(&array, 50);
 
-    // display
     display(array);
 
-    // search
-    int key = 50;
-//    printf("Element %d found @ %d\n", key, recursiveBinarySearch(&array, 0, array.length - 1, key));
-    printf("Sum = %d\n", sumRecursive(array, 0));
-    printf("Min = %d\n", min(array));
-    printf("Max = %d\n", max(array));
-    printf("Average = %d\n", average(array));
-    display(array);
     return 0;
 }

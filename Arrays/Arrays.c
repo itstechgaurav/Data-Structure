@@ -163,8 +163,8 @@ int moveToHeadLinearSearch(Array *arr, int key) {
 
 // # Binary Search
 
-int binarySearch(Array *array, int l, int h, int key) {
-    int m;
+int binarySearch(Array *array, int key) {
+    int m, l = 0, h = array->length;
     while(l <= h) {
         m = (l + h) / 2;
 
@@ -172,7 +172,7 @@ int binarySearch(Array *array, int l, int h, int key) {
             return m;
         else if(key < array->storage[m])
             h = m - 1;
-        else
+        else if(key > array->storage[m])
             l = m + 1;
     }
 
@@ -343,16 +343,143 @@ Array mergeSortedArray_(Array *A, Array *B) {
     return C;
 }
 
+Array arrayUnion(Array *first, Array *second) {
+    Array united = createArray();
+    int i = 0;
+    for(; i < first->length; i++) { // first copy the first array into united
+        united.storage[united.length++] = first->storage[i];
+    }
+    i = 0;
+
+    for(; i < second->length; i++) {
+        // compare elements of second and if they don't exists in united then push into united
+        if(linearSearch(&united, second->storage[i]) == -1) { // if element not found
+            united.storage[united.length++] = second->storage[i];
+        }
+    }
+    return united;
+}
+
+Array arrayUnionMergingMethod(Array *first, Array *second) {
+    int i, j = i = 0;
+    Array united = createArray();
+    while(i < first->length && j < second->length) {
+        if(first->storage[i] == second->storage[j]) {
+            united.storage[united.length++] = first->storage[i];
+            i++, j++;
+        } else if(first->storage[i] < second->storage[j]) {
+            united.storage[united.length++] = first->storage[i++];
+        } else {
+            united.storage[united.length++] = second->storage[j++];
+        }
+    }
+
+    while(i < first->length) united.storage[united.length++] = first->storage[i++];
+    while(j < second->length) united.storage[united.length++] = second->storage[j++];
+
+    return united;
+}
+
+Array arrayIntersection(Array *first, Array *second) {
+    Array intersection = createArray();
+
+    for(int i = 0; i < first->length; i++) {
+        if(linearSearch(second, first->storage[i]) != -1) {
+            intersection.storage[intersection.length++] = first->storage[i];
+        }
+    }
+
+    return intersection;
+}
+
+Array arrayIntersectionMergeMethod(Array *first, Array *second) {
+    int i, j = i = 0;
+    Array intersection = createArray();
+
+    while(i < first->length && j < second->length) {
+        if(first->storage[i] == second->storage[j]) {
+            intersection.storage[intersection.length++] = first->storage[i];
+            i++, j++;
+        } else if(first->storage[i] < second->storage[j]) {
+            i++;
+        } else j++;
+    }
+
+    return intersection;
+}
+
+Array arrayDifference(Array *first, Array *second) {
+    Array difference = createArray();
+
+    for(int i = 0; i < first->length; i++) {
+        if(linearSearch(second, first->storage[i]) == -1) {
+            difference.storage[difference.length++] = first->storage[i];
+        }
+    }
+
+    return difference;
+}
+
+Array arrayDifferenceMergeMethod(Array *first, Array *second) {
+    Array difference = createArray();
+    int i, j = i = 0;
+
+    while(i < first->length && j < second->length) {
+        if(first->storage[i] == second->storage[j]) {
+            i++, j++;
+        } else if(first->storage[i] < second->storage[j]) {
+            difference.storage[difference.length++] = first->storage[i];
+            i++;
+        } else j++;
+    }
+
+    while(i < first->length) difference.storage[difference.length++] = first->storage[i++];
+    return difference;
+}
+
 int array_main() {
-    Array array = createArray();
+    Array first = createArray();
+    Array second = createArray();
+    Array united, intersection, difference;
 
-    append(&array, 10);
-    append(&array, -20);
-    append(&array, 30);
-    append(&array, -40);
-    append(&array, 50);
+//    append(&first, 3);
+//    append(&first, 5);
+//    append(&first, 10);
+//    append(&first, 4);
+//    append(&first, 6);
+//
+//    append(&second, 12);
+//    append(&second, 4);
+//    append(&second, 7);
+//    append(&second, 5);
+//    append(&second, 2);
 
-    display(array);
+//    united = arrayUnion(&first, &second);
+//    intersection = arrayIntersection(&first, &second);
+//    difference = arrayDifference(&first, &second);
+
+    append(&first, 3);
+    append(&first, 4);
+    append(&first, 5);
+    append(&first, 6);
+    append(&first, 14);
+
+
+    append(&second, 2);
+    append(&second, 4);
+    append(&second, 5);
+    append(&second, 7);
+    append(&second, 12);
+
+//    united = arrayUnionMergingMethod(&first, &second);
+//    intersection = arrayIntersectionMergeMethod(&first, &second);
+    difference = arrayDifferenceMergeMethod(&first, &second);
+
+    display(first);
+    display(second);
+//    display(united);
+//    display(intersection);
+    display(difference);
 
     return 0;
 }
